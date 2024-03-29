@@ -1,11 +1,12 @@
+const AppError= require('./utilites/appError')
 const express     = require( 'express' );
-const app         = express( );
-const usersRoutes = require('./routes/userRoutes');
+const app         = express();
+const userRouter= require('./routes/userRoutes');
 
 // Middleware
-app.use( express.json( ));
+app.use( express.json());
 
-app.use("/api/v1/users", usersRoutes);
+app.use("/api/v1/loanService", userRouter);
 
 app.all('*',(req,res,next)=>{
     const err=new AppError(`can not find "${req.originalUrl}" url`,404)

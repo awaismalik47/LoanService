@@ -1,5 +1,8 @@
+const User = require("../models/userModel");
 const AppError = require("../utilites/appError");
 const catchAsync = require("../utilites/catchAsync");
+const jwt = require("jsonwebtoken");
+
 
 
 // generating Token
@@ -34,10 +37,11 @@ const createSendToken=(user,statusCode,res)=>{
 
 const signup = catchAsync(async (req, res, next) => {
     console.log("Inside the signUp Controller...");
-    return;
+
     // Creating New User
     const newUser = await User.create({
-      name: req.body.name,
+      firstName: req.body.firstName,
+      lastName:req.body.lastName,
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
@@ -56,7 +60,36 @@ const signup = catchAsync(async (req, res, next) => {
     createSendToken(newUser,201,res)
   });
 
+
+  const signin = catchAsync(async (req, res, next) => {
+    const { email, password } = req.body;
+   
+    // check if email and password exists
+    if (!email || !password) {
+      error = new AppError("Please provide Email and Password", 400);
+      return next(error);
+    }
+    // check if user exists and password is correct
+    // the + password will add the password field to user object
+    // beacuse we have set the password as select false which will not return
+    // the password to user .
+    const user = await User.findOne({ email });
+  console.log(password,user.password);
+    if (!user || !(await user.passwordMatching(password, user.password))) {
+      error = new AppError("Incorrect Email or Password !", 401);
+      return next(error);
+    }
+    const token = generateToken(user._id);
+    // send token if user and password is correct
+    res.status(200).json({
+      status: "success",
+      token,
+    });
+  });
+
+
   module.exports={
     signup,
     createSendToken,
+    signin,
   }
