@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator= require('validator');
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 
 const userSchema = new mongoose.Schema({
@@ -52,8 +53,8 @@ const userSchema = new mongoose.Schema({
   });
 
 
-  userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) {
+  userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
       return next();
     } else {
       // Hash the password with a cost of 12
@@ -69,6 +70,26 @@ const userSchema = new mongoose.Schema({
     userPassword
   ) {
     return await bcrypt.compare(loginPassword, userPassword);
+  };
+
+
+  userSchema.methods.createPasswordResetToken = function () {
+    // Create a plain text token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    console.log('password Reset Token Plain', resetToken);
+    // encrypt the token
+    this.passwordResetToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+    console.log('password Reset Token', this.passwordResetToken);
+    const currentTimeUTC = Date.now(); // Get current time in UTC
+    const currentTimePKT = new Date(currentTimeUTC + 5 * 60 * 60 * 1000); // Add 5 hours for Pakistan Standard Time
+  
+    // Add 10 minutes to the PKT time
+    currentTimePKT.setMinutes(currentTimePKT.getMinutes() + 10);
+    this.passwordResetExpires = currentTimePKT;
+    return resetToken;
   };
 
 
