@@ -1,8 +1,8 @@
-const app       = require( './app' );
-const dotenv    = require( 'dotenv' );
+const app = require( './app' );
+const dotenv  = require( 'dotenv' );
 const mongoose  = require( 'mongoose' );
-const PORT      = 5300;
-
+const PORT  = 5300;
+ 
 // Path For Enviornment File
 dotenv.config( {path:'./config.env'} );
 
@@ -22,7 +22,7 @@ mongoose.connect(DB, {
 
 // Server listening ....
  const server= app.listen( PORT, function( err ){
-    if (err) console.log( 'Error in server setup' )
+    if (err)  console.log( 'Error in server setup' )
     console.log( 'Server listening on Port', PORT );
 });
 
