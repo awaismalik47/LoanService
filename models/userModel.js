@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator= require('validator');
+const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
     passwordResetExpires: Date,
     active:{
       type:Boolean,
-      default:true,
+      default:false,
       select:true
     }
   });
@@ -61,14 +61,11 @@ const userSchema = new mongoose.Schema({
       this.password = await bcrypt.hash(this.password, 12);
       // Not storing confirm password into the database
       this.passwordConfirm = undefined;
-    }
+      }
   });
 
   
-  userSchema.methods.passwordMatching = async function (
-    loginPassword,
-    userPassword
-  ) {
+  userSchema.methods.passwordMatching = async function (loginPassword,userPassword) {
     return await bcrypt.compare(loginPassword, userPassword);
   };
 
