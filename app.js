@@ -1,7 +1,10 @@
+const errorHandler=require('./controller/errorController')
+
 const AppError = require('./utilites/appError')
 const express = require('express');
 const app = express();
 const userRouter = require('./routes/userRoutes');
+
 
 // Middleware 
 app.use(express.json());
@@ -13,4 +16,5 @@ app.all('*',(req,res,next)=>{
     next(err)
 });
 // Exporting App File To use in othe File...
+app.use(errorHandler)
 module.exports = app;
